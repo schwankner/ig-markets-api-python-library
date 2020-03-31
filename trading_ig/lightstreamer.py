@@ -358,6 +358,7 @@ class LSClient(object):
                 # A complete implementation should create a new session
                 # and re-subscribe to all the old items and relative fields.
                 log.error("SYNC ERROR")
+                rebind = True
                 receive = False
             elif message.startswith(END_CMD):
                 # Terminate the receiving loop on END message.
@@ -377,8 +378,10 @@ class LSClient(object):
             log.debug("Closing connection")
             # Clear internal data structures for session
             # and subscriptions management.
-            self._stream_connection.close()
-            self._session.clear()
+            if self._stream_connection:
+                self._stream_connection.close()
+            if self._session:
+                self._session.clear()
             self._subscriptions.clear()
             self._current_subscription_key = 0
         else:
@@ -431,3 +434,4 @@ if __name__ == "__main__":
     atexit.register(handler)
 
     lightstreamer_client._join()
+
